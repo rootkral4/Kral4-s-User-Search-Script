@@ -1,21 +1,14 @@
-import urllib
-
-import urllib.request
-
-import requests
-
-import time
-
-import sys
-
+#Modules
+import requests, time, sys, platform
+from os import system
 from bs4 import BeautifulSoup
 
+if platform.system() == "Linux": system("clear")
+else: system("cls")
 
+#Inputs
 searchme = input("Username :")
-
 fullscan = input("Full Scan ? (Y/n) :")
-
-
 
 if len(fullscan) < 1:
 
@@ -30,23 +23,16 @@ elif fullscan == "n":
     fullscan = False
 
 else:
-
     fullscan = False
 
-
-
+#Arrays
 accounts = []
-
 others = []
-
 socialmedia = []
-
 maybes = []
 
 
-
 def search(query, num):
-
     urls = []
 
     query = query.replace(' ', '+')
@@ -55,11 +41,9 @@ def search(query, num):
 
     USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
 
-    headers = {"user-agent" : USER_AGENT}
+    headers = {"user-agent": USER_AGENT}
 
     resp = requests.get(URL, headers=headers)
-
-
 
     if resp.status_code == 200:
 
@@ -72,7 +56,6 @@ def search(query, num):
             results = div.select("a")
 
             if (len(results) >= 1):
-
                 urls.append(results[0].attrs['href'])
 
         return urls
@@ -90,10 +73,8 @@ def search(query, num):
         sys.exit(1)
 
 
-
 def basicsearch(username):
-
-    for i in search("intext:\""+ username +"\"", num=20):
+    for i in search(f"intext:\{username}\\", num=20):
 
         if "user" in i:
 
@@ -111,7 +92,7 @@ def basicsearch(username):
 
             accounts.append(i)
 
-        elif "spotify" in i :
+        elif "spotify" in i:
 
             accounts.append(i)
 
@@ -169,7 +150,9 @@ def basicsearch(username):
 
 
 def generalsearch(username):
-    for i in search("intext:\""+ username +"\" inurl:instagram.com OR facebook.com OR linkedin.com OR twitch.tv OR snapchat.com OR tiktok.com OR pinterest.com OR youtube.com OR twitter.com", num=50):
+    for i in search(
+            f"intext:\{username}\ inurl:instagram.com OR facebook.com OR linkedin.com OR twitch.tv OR snapchat.com OR tiktok.com OR pinterest.com OR youtube.com OR twitter.com",
+            num=50):
 
         if username in i:
 
@@ -181,48 +164,34 @@ def generalsearch(username):
 
 print("[+] Running basic search ...")
 
-
-
 basicsearch(searchme)
-
-
 
 print("[+] Basic search done !")
 
-
-
 if fullscan == True:
-
     print("[+] Running full search, please wait it may take few minutes ...")
 
     time.sleep(30)
 
     generalsearch(searchme)
 
+if len(others) > 0:
+    print("\n[\033[1;34;m\033[34;05m*\033[25m\033[1;m] Others :\n")
+    for i in others:
+        print(i)
+    print("-"*70)
 
+if len(maybes) > 0:
+    print("\n[\033[1;43;m\033[33;05m?\033[25m\033[1;m] Maybe :\n")
+    for i in maybes:
+        print(i)
+    print("-"*70)
 
+if len(accounts) > 0:
+    print("\n[\033[1;32;m\033[32;05m!\033[25m\033[1;m] Found accounts :\n")
+    for i in accounts:
+        print(i)
+    print("-"*70)
 
-
-print("\n[!] Others :\n")
-
-for i in others:
-
-    print(i)
-
-print("-----")
-
-print("\n[!] Maybe :\n")
-
-for i in maybes:
-
-    print(i)
-
-
-print("-----")
-print("\n[!] Found accounts :\n")
-
-for i in accounts:
-
-    print(i)
-
-print("-----")
+if len(others) == 0 and len(maybes) == 0 and len(accounts) == 0:
+    print("\n[\033[1;32;m\033[32;05m-\033[25m\033[1;m] No result!")
